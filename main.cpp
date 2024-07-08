@@ -16,6 +16,15 @@ struct BitsetStruct
     }
 };
 
+// Function to print the bitset for a given index
+void printBitset(const std::bitset<6> &bits)
+{
+    for (int i = 5; i >= 0; --i)
+    {
+        std::cout << bits[i];
+    }
+}
+
 // Function to aggregate bits based on layers and collect indexes where all bits are set to 1
 std::vector<size_t> aggregateLayers(std::array<BitsetStruct, ARRAY_SIZE> &bitsetArray,
                                     const std::vector<size_t> &layer1,
@@ -26,6 +35,16 @@ std::vector<size_t> aggregateLayers(std::array<BitsetStruct, ARRAY_SIZE> &bitset
                                     const std::vector<size_t> &layer6)
 {
     std::vector<size_t> matchedIndexes;
+
+    // Print bitsets before aggregation
+    std::cout << "Bitsets Before Aggregation:" << std::endl;
+    for (size_t i = 0; i < ARRAY_SIZE; ++i)
+    {
+        std::cout << "Index " << i << ": ";
+        printBitset(bitsetArray[i].bits);
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
     // Process layer1
     for (size_t index : layer1)
@@ -80,6 +99,16 @@ std::vector<size_t> aggregateLayers(std::array<BitsetStruct, ARRAY_SIZE> &bitset
             bitsetArray[index].bits.set(5); // Set the sixth bit for index in layer 6
         }
     }
+
+    // Print bitsets after aggregation
+    std::cout << "Bitsets After Aggregation:" << std::endl;
+    for (size_t i = 0; i < ARRAY_SIZE; ++i)
+    {
+        std::cout << "Index " << i << ": ";
+        printBitset(bitsetArray[i].bits);
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 
     // Check if all bits are set to 1 for each index and collect matching indexes
     for (size_t i = 0; i < ARRAY_SIZE; ++i)
