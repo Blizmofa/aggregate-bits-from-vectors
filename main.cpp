@@ -27,14 +27,10 @@ void printBitset(const std::bitset<6> &bits)
 
 // Function to aggregate bits based on layers and collect indexes where all bits are set to 1
 std::vector<size_t> aggregateLayers(std::array<BitsetStruct, ARRAY_SIZE> &bitsetArray,
-                                    const std::vector<size_t> &layer1,
-                                    const std::vector<size_t> &layer2,
-                                    const std::vector<size_t> &layer3,
-                                    const std::vector<size_t> &layer4,
-                                    const std::vector<size_t> &layer5,
-                                    const std::vector<size_t> &layer6)
+                                    const std::vector<std::vector<size_t>> &layers)
 {
-    std::vector<size_t> matchedIndexes;
+    // Define bit positions corresponding to each layer
+    std::vector<size_t> bitPositions = {0, 1, 2, 3, 4, 5};
 
     // Print bitsets before aggregation
     std::cout << "Bitsets Before Aggregation:" << std::endl;
@@ -46,57 +42,26 @@ std::vector<size_t> aggregateLayers(std::array<BitsetStruct, ARRAY_SIZE> &bitset
     }
     std::cout << std::endl;
 
-    // Process layer1
-    for (size_t index : layer1)
+    // Process each layer
+    for (size_t layerIdx = 0; layerIdx < layers.size(); ++layerIdx)
     {
-        if (index < ARRAY_SIZE)
+        for (size_t index : layers[layerIdx])
         {
-            bitsetArray[index].bits.set(0); // Set the first bit for index in layer 1
+            if (index < ARRAY_SIZE)
+            {
+                bitsetArray[index].bits.flip(bitPositions[layerIdx]);
+            }
         }
     }
 
-    // Process layer2
-    for (size_t index : layer2)
-    {
-        if (index < ARRAY_SIZE)
-        {
-            bitsetArray[index].bits.set(1); // Set the second bit for index in layer 2
-        }
-    }
+    std::vector<size_t> matchedIndexes;
 
-    // Process layer3
-    for (size_t index : layer3)
+    // Check if all bits are set to 1 for each index and collect matching indexes
+    for (size_t i = 0; i < ARRAY_SIZE; ++i)
     {
-        if (index < ARRAY_SIZE)
+        if (bitsetArray[i].bits.all())
         {
-            bitsetArray[index].bits.set(2); // Set the third bit for index in layer 3
-        }
-    }
-
-    // Process layer4
-    for (size_t index : layer4)
-    {
-        if (index < ARRAY_SIZE)
-        {
-            bitsetArray[index].bits.set(3); // Set the fourth bit for index in layer 4
-        }
-    }
-
-    // Process layer5
-    for (size_t index : layer5)
-    {
-        if (index < ARRAY_SIZE)
-        {
-            bitsetArray[index].bits.set(4); // Set the fifth bit for index in layer 5
-        }
-    }
-
-    // Process layer6
-    for (size_t index : layer6)
-    {
-        if (index < ARRAY_SIZE)
-        {
-            bitsetArray[index].bits.set(5); // Set the sixth bit for index in layer 6
+            matchedIndexes.push_back(i); // Add index to matchedIndexes if all bits are set to 1
         }
     }
 
@@ -110,15 +75,6 @@ std::vector<size_t> aggregateLayers(std::array<BitsetStruct, ARRAY_SIZE> &bitset
     }
     std::cout << std::endl;
 
-    // Check if all bits are set to 1 for each index and collect matching indexes
-    for (size_t i = 0; i < ARRAY_SIZE; ++i)
-    {
-        if (bitsetArray[i].bits.all())
-        {
-            matchedIndexes.push_back(i); // Add index to matchedIndexes if all bits are set to 1
-        }
-    }
-
     return matchedIndexes;
 }
 
@@ -127,7 +83,6 @@ int main()
     // Step 1: Create an array of BitsetStruct
     std::array<BitsetStruct, ARRAY_SIZE> bitsetArray;
 
-    // Step 2: Create vectors to store indexes of the array with values up to 9
     std::vector<size_t> layer1 = {1, 2, 3};
     std::vector<size_t> layer2 = {1, 2, 3, 4, 5};
     std::vector<size_t> layer3 = {1, 2, 3, 6, 7};
@@ -135,8 +90,17 @@ int main()
     std::vector<size_t> layer5 = {1, 2, 3, 4, 5};
     std::vector<size_t> layer6 = {1, 2, 3, 5, 6};
 
+    // Step 2: Create vectors to store indexes of the array with values up to 9
+    std::vector<std::vector<size_t>> layers = {
+        layer1,
+        layer2,
+        layer3,
+        layer4,
+        layer5,
+        layer6};
+
     // Step 3: Aggregate bits based on layers and collect matched indexes
-    std::vector<size_t> matchedIndexes = aggregateLayers(bitsetArray, layer1, layer2, layer3, layer4, layer5, layer6);
+    std::vector<size_t> matchedIndexes = aggregateLayers(bitsetArray, layers);
 
     // Step 4: Output the matched indexes
     if (!matchedIndexes.empty())
